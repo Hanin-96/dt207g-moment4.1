@@ -7,6 +7,9 @@ require("dotenv").config();
 //Token
 const jwt = require("jsonwebtoken");
 
+//Importerar user model
+const User = require("../models/user")
+
 //Connect to MongoDB
 mongoose.set("strictQuery", false);
 mongoose.connect(process.env.DATABASE).then(() => {
@@ -15,5 +18,5 @@ mongoose.connect(process.env.DATABASE).then(() => {
     console.error("Connection to MongoDB failed");
 });
 
-//user model
-const User = require("../models/user")
+
+//Route registrera ny user

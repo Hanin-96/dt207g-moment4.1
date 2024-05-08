@@ -68,4 +68,38 @@ userSchema.statics.register = async function(username, firstname, lastname, emai
 };
 
 
+//Compare hashed password
+userSchema.methods.comparePassword = async function (password) {
+    try {
+        return await bcrypt.compare(password, this.password);
+    } catch (error) {
+        throw error;
+    }
+}
+
+//Inloggning User
+//Endast username och password skickas in vid inloggning
+userSchema.statics.login = async function(username, password) {
+    try {
+        const user = await this.findOne({ username });
+        if (!user) {
+            throw new Error("Incorrect username/password")
+        }
+
+        const isPasswordMatch = await user.comparePassword(password);
+
+        //Incorrect password
+        if (!isPasswordMatch) {
+            throw new Error("Incorrect username/password")
+        }
+
+        //Correct
+        return user;
+
+    } catch (error) {
+        throw error;
+    }
+};
+
+
 module.exports = user;

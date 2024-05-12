@@ -20,3 +20,70 @@ mongoose.connect(process.env.DATABASE).then(() => {
 
 
 //Route registrera ny user
+
+router.post("/register", async (req, res) => {
+    console.log("Register called...");
+    try {
+        const { username, firstname, lastname, email, password } = req.body;
+        console.log("Work pls")
+        //Validera input
+        if (!username || !password || !firstname || !lastname || !email) {
+            return res.status(400).json({ error: "Send username,password, firstname, lastname and email" });
+        }
+
+        //Correct input for user
+        const user = new User({ username, firstname, lastname, email, password});
+        console.log("user done")
+        console.log(user)
+        await user.save();
+        console.log("user saved")
+
+
+        res.status(201).json({ message: "User created" });
+
+    } catch (error) {
+        res.status(500).json({ error: error });
+    }
+})
+
+//Login user
+router.post("/login", async (req, res) => {
+    console.log("login called...");
+
+    try {
+        const { username, password } = req.body;
+
+        //Validera input
+        if (!username || !password) {
+            return res.status(400).json({ error: "Send username and password" });
+        }
+
+        //Validera inloggningsuppgifter
+        const user = await User.findOne({ username });
+        if (!user) {
+            return res.status(400).json({ Error: "Incorrect username/password" });
+        }
+
+
+        //Check password
+        const isPasswordCorrect = await user.comparePassword(password);
+        if (!isPasswordCorrect) {
+            return res.status(400).json({ Error: "Incorrect username/password" });
+        } else {
+            //Create JWT
+            const payload = { username: username }
+            const token = jwt.sign(payload, process.env.JWT_SECRET_KEY, {expiresIn: '1h'});
+            const response = {
+                message: "user logged in",
+                token: token
+            }
+            res.status(200).json({response})
+        }
+
+    } catch (error) {
+        res.status(500).json({ error: "Server error" });
+    }
+})
+
+//Exportera modulen
+module.exports = router;

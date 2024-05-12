@@ -12,13 +12,13 @@ const userSchema = new mongoose.Schema({
     firstname: {
         type: String,
         required: true,
-        unique: true,
+        unique: false,
         trim: true
     },
     lastname: {
         type: String,
         required: true,
-        unique: true,
+        unique: false,
         trim: true
     },
     email: {
@@ -30,7 +30,7 @@ const userSchema = new mongoose.Schema({
     password: {
         type: String,
         required: true,
-        unique: true,
+        unique: false,
         trim: true
     },
     created: {
@@ -38,7 +38,6 @@ const userSchema = new mongoose.Schema({
         default: Date.now
     }
 });
-const user = mongoose.model("user", userSchema);
 
 
 //Hasha lösenord innan den sparas
@@ -48,6 +47,7 @@ userSchema.pre("save", async function(next) {
             const hashedPassword = await bcrypt.hash(this.password, 10);
             this.password = hashedPassword;
         }
+
         next();
 
     } catch (error) {
@@ -55,17 +55,25 @@ userSchema.pre("save", async function(next) {
     }
 });
 
+
+
+/*
 //Registrera ny user
 userSchema.statics.register = async function(username, firstname, lastname, email, password) {
     try {
+        
+        console.log("called register")
         const user = new this({ username, firstname, lastname, email, password });
         await user.save();
+        
+        console.log("after save")
         return user;
 
     } catch (error) {
         throw error;
     }
 };
+*/
 
 
 //Compare hashed password
@@ -101,5 +109,5 @@ userSchema.statics.login = async function(username, password) {
     }
 };
 
-
+const user = mongoose.model("user", userSchema);
 module.exports = user;

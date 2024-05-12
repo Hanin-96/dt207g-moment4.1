@@ -19,3 +19,30 @@ app.use(express.json());
 app.listen(port, () => {
     console.log("servern är startad på port: " + port);
 });
+
+//Routes
+app.use("", authRoutes);
+
+//Skyddad route
+app.get("/protected", authenticateToken, (req, res) => {
+    res.json({ message: "Skyddar route" });
+});
+
+
+//Validera token
+function authenticateToken(req, res, next) {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1]; //Token
+
+    if (token == null) {
+        return res.status(401).json({ message: "Token missing" });
+    }
+    jwt.verify(token, process.env.JWT_SECRET_KEY, (err, username) => {
+        if (err) {
+            return res.status(403).json({ message: "Not correct JWT" });
+        } else {
+            req.username = username;
+            next();
+        }
+    });
+}                            

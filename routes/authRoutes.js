@@ -33,10 +33,9 @@ router.post("/register", async (req, res) => {
 
         //Correct input for user
         const user = new User({ username, firstname, lastname, email, password});
-        console.log("user done")
-        console.log(user)
+
         await user.save();
-        console.log("user saved")
+        //console.log("user saved")
 
 
         res.status(201).json({ message: "User created" });
@@ -48,7 +47,7 @@ router.post("/register", async (req, res) => {
 
 //Login user
 router.post("/login", async (req, res) => {
-    console.log("login called...");
+    //console.log("login called...");
 
     try {
         const { username, password } = req.body;

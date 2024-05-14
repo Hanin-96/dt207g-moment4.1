@@ -56,26 +56,6 @@ userSchema.pre("save", async function(next) {
 });
 
 
-
-/*
-//Registrera ny user
-userSchema.statics.register = async function(username, firstname, lastname, email, password) {
-    try {
-        
-        console.log("called register")
-        const user = new this({ username, firstname, lastname, email, password });
-        await user.save();
-        
-        console.log("after save")
-        return user;
-
-    } catch (error) {
-        throw error;
-    }
-};
-*/
-
-
 //Compare hashed password
 userSchema.methods.comparePassword = async function (password) {
     try {
